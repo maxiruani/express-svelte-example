@@ -1,19 +1,20 @@
 'use strict';
 
-const replace = require('@rollup/plugin-replace');
-const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const commonjs = require('@rollup/plugin-commonjs');
-const svelte = require('rollup-plugin-svelte');
-const { terser } = require('rollup-plugin-terser');
-const babel = require('@rollup/plugin-babel');
-const multiInput = require('rollup-plugin-multi-input');
+import replace from '@rollup/plugin-replace';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import svelte from 'rollup-plugin-svelte';
+import { terser } from 'rollup-plugin-terser';
+import babel from '@rollup/plugin-babel';
+import multiInput from 'rollup-plugin-multi-input';
+import expressSvelte from 'rollup-plugin-express-svelte';
 
 const env = process.env.NODE_ENV;
 const dev = env === 'development';
-const legacy = !!process.env.LEGACY_BUILD;
+const legacy = process.env.LEGACY_BUILD != null;
 
-module.exports = {
-    input: ['views/**/*.js'],
+export default {
+    input: ['views/**/*.svelte'],
     output: {
         sourcemap: true,
         format: 'iife',
@@ -23,6 +24,7 @@ module.exports = {
     },
     plugins: [
         multiInput({ relative: 'views/' }),
+        expressSvelte({ hydratable: 'complete' }),
 
         replace({
             'process.browser': true,
@@ -53,7 +55,7 @@ module.exports = {
 
         commonjs(),
 
-        legacy && babel({
+        legacy === true && babel({
             extensions: ['.js', '.mjs', '.html', '.svelte'],
             runtimeHelpers: 'runtime',
             exclude: ['node_modules/@babel/**', 'node_modules/core-js/**'],
@@ -78,7 +80,7 @@ module.exports = {
             ]
         }),
 
-        !dev && terser()
+        dev === false && terser()
     ],
 
     preserveEntrySignatures: false
