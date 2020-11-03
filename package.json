@@ -18,7 +18,8 @@
   "main": "index.js",
   "scripts": {
     "build": "rollup -c",
-    "prebuild": "del-cli public/dist"
+    "prebuild": "del-cli public/dist",
+    "start": "NODE_ENV=development node app.js"
   },
   "repository": {
     "type": "git",
