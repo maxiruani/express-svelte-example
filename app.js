@@ -12,6 +12,7 @@ app.set('json spaces', 2);
 //
 app.use(expressSvelte({
     hydratable: true,
+    legacy: true,
     viewsDirname: __dirname + '/views',
     bundlesDirname: __dirname + '/public/dist',
     bundlesHost: '/public/dist',

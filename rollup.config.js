@@ -11,77 +11,83 @@ import expressSvelte from 'rollup-plugin-express-svelte';
 
 const env = process.env.NODE_ENV;
 const dev = env === 'development';
-const legacy = process.env.LEGACY_BUILD != null;
 
-export default {
-    input: ['views/**/*.svelte'],
-    output: {
-        sourcemap: true,
-        format: 'iife',
-        dir: 'public/dist',
-        chunkFileNames: dev ? '[name].js' : '[name]-[hash].js',
-        assetFileNames: dev ? '[name][extname]' : '[name]-[hash][extname]'
-    },
-    plugins: [
-        multiInput({ relative: 'views/' }),
-        expressSvelte({ hydratable: 'complete' }),
+export default [
+    getConfig({ legacy: true }),
+    getConfig({ legacy: false })
+];
 
-        replace({
-            'process.browser': true,
-            'process.env.NODE_ENV': JSON.stringify(env)
-        }),
+function getConfig({ legacy }) {
+    return {
+        input: ['views/**/*.svelte'],
+        output: {
+            sourcemap: true,
+            format: 'iife',
+            dir: `public/dist/${legacy ? 'legacy' : 'modern'}`,
+            chunkFileNames: dev ? '[name].js' : '[name]-[hash].js',
+            assetFileNames: dev ? '[name][extname]' : '[name]-[hash][extname]'
+        },
+        plugins: [
+            multiInput({ relative: 'views/' }),
+            expressSvelte({ hydratable: 'complete' }),
 
-        svelte({
-            dev,
-            hydratable: true,
-            emitCss: false,
-            css: css => {
-                css.write(css.filename, true);
-            }
-        }),
+            replace({
+                'process.browser': true,
+                'process.env.NODE_ENV': JSON.stringify(env)
+            }),
 
-        nodeResolve({
-            browser: true,
-            dedupe: [
-                'svelte',
-                'svelte/animate',
-                'svelte/easing',
-                'svelte/internal',
-                'svelte/motion',
-                'svelte/store',
-                'svelte/transition'
-            ]
-        }),
+            svelte({
+                dev,
+                hydratable: true,
+                emitCss: false,
+                css: css => {
+                    css.write(css.filename, true);
+                }
+            }),
 
-        commonjs(),
-
-        legacy === true && babel({
-            extensions: ['.js', '.mjs', '.html', '.svelte'],
-            runtimeHelpers: 'runtime',
-            exclude: ['node_modules/@babel/**', 'node_modules/core-js/**'],
-            presets: [
-                [
-                    '@babel/preset-env',
-                    {
-                        targets: '> 0.25%, not dead',
-                        useBuiltIns: 'usage',
-                        corejs: 3
-                    }
+            nodeResolve({
+                browser: true,
+                dedupe: [
+                    'svelte',
+                    'svelte/animate',
+                    'svelte/easing',
+                    'svelte/internal',
+                    'svelte/motion',
+                    'svelte/store',
+                    'svelte/transition'
                 ]
-            ],
-            plugins: [
-                '@babel/plugin-syntax-dynamic-import',
-                [
-                    '@babel/plugin-transform-runtime',
-                    {
-                        useESModules: true
-                    }
+            }),
+
+            commonjs(),
+
+            legacy === true && babel({
+                extensions: ['.js', '.mjs', '.html', '.svelte'],
+                babelHelpers: 'runtime',
+                exclude: ['node_modules/@babel/**', 'node_modules/core-js/**'],
+                presets: [
+                    [
+                        '@babel/preset-env',
+                        {
+                            targets: '> 0.25%, not dead',
+                            useBuiltIns: 'usage',
+                            corejs: 3
+                        }
+                    ]
+                ],
+                plugins: [
+                    '@babel/plugin-syntax-dynamic-import',
+                    [
+                        '@babel/plugin-transform-runtime',
+                        {
+                            useESModules: true
+                        }
+                    ]
                 ]
-            ]
-        }),
+            }),
 
-        dev === false && terser()
-    ],
+            dev === false && terser()
+        ],
 
-    preserveEntrySignatures: false
-};
+        preserveEntrySignatures: false
+    }
+}
