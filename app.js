@@ -11,7 +11,7 @@ app.set('json spaces', 2);
 // Express svelte setup
 //
 app.use(expressSvelte({
-    hydratable: true,
+    hydrationMode: 'complete',
     legacy: true,
     viewsDirname: __dirname + '/views',
     bundlesDirname: __dirname + '/public/dist',
@@ -33,6 +33,27 @@ app.get('/', function (req, res, next) {
     // TODO: Explain serialization process for globalProps and globalStore
 
     res.svelte('Page', {
+        globalStore: {
+            count: 0,
+            value: 'Store prop'
+        },
+        globalProps: {
+            value: 'Global prop'
+        },
+        props: {
+            value: 'View prop'
+        }
+    });
+});
+
+//
+// Home page
+//
+app.get('/page', function (req, res, next) {
+
+    // TODO: Explain serialization process for globalProps and globalStore
+
+    res.svelte('Page2/Page2', {
         globalStore: {
             count: 0,
             value: 'Store prop'
