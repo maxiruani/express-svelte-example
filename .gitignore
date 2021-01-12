@@ -4,3 +4,4 @@ node_modules/
 .tmp/
 public/dist/
 !public/dist/.gitkeep
+.express-svelte/
