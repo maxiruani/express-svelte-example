@@ -12,13 +12,12 @@
     "server-rendering",
     "engine",
     "template",
-    "hydration",
-    "partial-hydration"
+    "hydration"
   ],
   "main": "index.js",
   "scripts": {
     "build": "rollup -c",
-    "watch": "rollup -c -w",
+    "watch": "NODE_ENV=development rollup -c -w",
     "prebuild": "del-cli public/dist",
     "start": "NODE_ENV=development node app.js"
   },
@@ -35,8 +34,8 @@
   "dependencies": {
     "del-cli": "^3.0.1",
     "express": "^4.17.1",
-    "express-svelte": "git+https://github.com/maxiruani/express-svelte.git#task/v2_approach",
-    "rollup": "^2.33.0",
-    "svelte": "^3.29.4"
+    "express-svelte": "git+https://github.com/maxiruani/express-svelte.git#task/v3_approach",
+    "rollup": "^2.50.6",
+    "svelte": "^3.38.2"
   }
 }
